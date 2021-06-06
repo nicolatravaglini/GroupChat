@@ -22,5 +22,3 @@ Insert the application icon on each screen;
 For the server side, implement the graphical interface, which allows to enter the door code to gain access and the address Public IP to access; obviously do the same thing for the side as well client;
 
 Implement a startup screen with logo animation;
-
-Merge all screens into one window, which changes what's there every time inside;

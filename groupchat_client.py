@@ -38,9 +38,10 @@ class LoginPage:
 
     def config(self):
         # Config the login widgets
-        self.first_frame = Frame(self.root, bg=self.main_color)
-        self.second_frame = Frame(self.root, bg=self.main_color)
-        self.third_frame = Frame(self.root, bg=self.main_color)
+        self.general_frame = Frame(self.root, bg=self.main_color)
+        self.first_frame = Frame(self.general_frame, bg=self.main_color)
+        self.second_frame = Frame(self.general_frame, bg=self.main_color)
+        self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.username_label = Label(self.first_frame, text="Username", bg=self.main_color)
         self.password_label = Label(self.first_frame, text="Password", bg=self.main_color)
         self.username_entry = Entry(self.first_frame)
@@ -50,6 +51,7 @@ class LoginPage:
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
         # Draw the login widgets
+        self.general_frame.pack(expand=True)
         self.first_frame.pack(pady=5)
         self.second_frame.pack(pady=10)
         self.third_frame.pack()
@@ -131,6 +133,7 @@ class LoginPage:
             arg.delete(0, END)
 
     def quit(self):
+        self.general_frame.destroy()
         self.first_frame.destroy()
         self.second_frame.destroy()
         self.third_frame.destroy()
@@ -147,15 +150,17 @@ class RoomPage:
         self.main_color = color
 
     def config(self):
-        self.first_frame = Frame(self.root, bg=self.main_color)
-        self.second_frame = Frame(self.root, bg=self.main_color)
-        self.third_frame = Frame(self.root, bg=self.main_color)
+        self.general_frame = Frame(self.root, bg=self.main_color)
+        self.first_frame = Frame(self.general_frame, bg=self.main_color)
+        self.second_frame = Frame(self.general_frame, bg=self.main_color)
+        self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.room_label = Label(self.first_frame, text="Room name", bg=self.main_color)
         self.room_entry = Entry(self.first_frame)
         self.join_button = Button(self.second_frame, text="Join", command=self.join)
         self.create_button = Button(self.second_frame, text="Create", command=self.create)
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
+        self.general_frame.pack(expand=True)
         self.first_frame.pack(pady=5)
         self.second_frame.pack(pady=10)
         self.third_frame.pack()
@@ -223,6 +228,7 @@ class RoomPage:
             arg.delete(0, END)
 
     def quit(self):
+        self.general_frame.destroy()
         self.first_frame.destroy()
         self.second_frame.destroy()
         self.third_frame.destroy()
