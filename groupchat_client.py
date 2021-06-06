@@ -32,13 +32,9 @@ def send_to_server(choice, text, username, password):
 
 
 class LoginPage:
-    def __init__(self):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title("Groupchat - Login page")
-        self.root.geometry("200x160")
-        self.root.configure(bg=self.main_color)
-        self.root.resizable(False, False)
+    def __init__(self, root, color):
+        self.root = root
+        self.main_color = color
 
     def config(self):
         # Config the login widgets
@@ -135,7 +131,10 @@ class LoginPage:
             arg.delete(0, END)
 
     def quit(self):
-        self.root.destroy()
+        self.first_frame.destroy()
+        self.second_frame.destroy()
+        self.third_frame.destroy()
+        self.root.quit()
 
     def loop(self):
         self.root.mainloop()
@@ -143,13 +142,9 @@ class LoginPage:
 
 
 class RoomPage:
-    def __init__(self):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title("Groupchat - Room page")
-        self.root.geometry("200x120")
-        self.root.configure(bg=self.main_color)
-        self.root.resizable(False, False)
+    def __init__(self, root, color):
+        self.root = root
+        self.main_color = color
 
     def config(self):
         self.first_frame = Frame(self.root, bg=self.main_color)
@@ -228,7 +223,10 @@ class RoomPage:
             arg.delete(0, END)
 
     def quit(self):
-        self.root.destroy()
+        self.first_frame.destroy()
+        self.second_frame.destroy()
+        self.third_frame.destroy()
+        self.root.quit()
 
     def loop(self):
         self.root.mainloop()
@@ -236,13 +234,9 @@ class RoomPage:
 
 
 class MainPage:
-    def __init__(self, username, password, room):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title(f"Groupchat v{VERSION} - Main page")
-        self.root.geometry("450x500")
-        self.root.resizable(True, True)
-        self.root.minsize(450, 500)
+    def __init__(self, root, color, username, password, room):
+        self.root = root
+        self.main_color = color
         self.username = username
         self.password = password
         self.room = room
@@ -344,15 +338,23 @@ class MainPage:
 
 
 def main():
-    log_p = LoginPage()
+    main_color = "dim gray"
+    general_root = Tk()
+    general_root.title("GroupChat")
+    general_root.geometry("450x500")
+    general_root.minsize(450, 500)
+    general_root.configure(bg=main_color)
+    general_root.resizable(True, True)
+
+    log_p = LoginPage(general_root, main_color)
     log_p.config()
     username, password = log_p.loop()
 
-    room_p = RoomPage()
+    room_p = RoomPage(general_root, main_color)
     room_p.config()
     room = room_p.loop()
 
-    main_p = MainPage(username, password, room)
+    main_p = MainPage(general_root, main_color, username, password, room)
     main_p.config()
     main_p.loop()
 
