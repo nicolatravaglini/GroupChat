@@ -1,8 +1,8 @@
 # GroupChat
 A new server-client open-source messaging application written entirely in Python.
 
-CURRENT VERSION: 1.2.1
-Down here you can find the BUGS to resolve and the IDEAS to improve to the code.
+CURRENT VERSION: 1.2.3
+Down here you can find the BUGS to resolve, and the IDEAS to improve to the code.
 
 
 BUGS:

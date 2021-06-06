@@ -3,7 +3,7 @@ from threading import Thread
 import socket
 
 # App version
-VERSION = "1.2.1"
+VERSION = "1.2.3"
 
 # Client global variables
 HOST = "127.0.1.1"
