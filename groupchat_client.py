@@ -32,28 +32,28 @@ def send_to_server(choice, text, username, password):
 
 
 class LoginPage:
-    def __init__(self):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title("Groupchat - Login page")
-        self.root.geometry("200x160")
-        self.root.configure(bg=self.main_color)
-        self.root.resizable(False, False)
+    def __init__(self, root, color):
+        self.root = root
+        self.root.geometry("300x250")
+        self.root.minsize(300, 250)
+        self.main_color = color
 
     def config(self):
         # Config the login widgets
-        self.first_frame = Frame(self.root, bg=self.main_color)
-        self.second_frame = Frame(self.root, bg=self.main_color)
-        self.third_frame = Frame(self.root, bg=self.main_color)
+        self.general_frame = Frame(self.root, bg=self.main_color)
+        self.first_frame = Frame(self.general_frame, bg=self.main_color)
+        self.second_frame = Frame(self.general_frame, bg=self.main_color)
+        self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.username_label = Label(self.first_frame, text="Username", bg=self.main_color)
         self.password_label = Label(self.first_frame, text="Password", bg=self.main_color)
-        self.username_entry = Entry(self.first_frame)
-        self.password_entry = Entry(self.first_frame, show='*')
-        self.login_button = Button(self.second_frame, text="Login", command=self.login)
-        self.register_button = Button(self.second_frame, text="Register", command=self.register)
+        self.username_entry = Entry(self.first_frame, relief=FLAT)
+        self.password_entry = Entry(self.first_frame, show='*', relief=FLAT)
+        self.login_button = Button(self.second_frame, text="Login", command=self.login, relief=FLAT)
+        self.register_button = Button(self.second_frame, text="Register", command=self.register, relief=FLAT)
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
         # Draw the login widgets
+        self.general_frame.pack(expand=True)
         self.first_frame.pack(pady=5)
         self.second_frame.pack(pady=10)
         self.third_frame.pack()
@@ -135,7 +135,11 @@ class LoginPage:
             arg.delete(0, END)
 
     def quit(self):
-        self.root.destroy()
+        self.general_frame.destroy()
+        self.first_frame.destroy()
+        self.second_frame.destroy()
+        self.third_frame.destroy()
+        self.root.quit()
 
     def loop(self):
         self.root.mainloop()
@@ -143,24 +147,24 @@ class LoginPage:
 
 
 class RoomPage:
-    def __init__(self):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title("Groupchat - Room page")
-        self.root.geometry("200x120")
-        self.root.configure(bg=self.main_color)
-        self.root.resizable(False, False)
+    def __init__(self, root, color):
+        self.root = root
+        self.root.geometry("300x250")
+        self.root.minsize(300, 250)
+        self.main_color = color
 
     def config(self):
-        self.first_frame = Frame(self.root, bg=self.main_color)
-        self.second_frame = Frame(self.root, bg=self.main_color)
-        self.third_frame = Frame(self.root, bg=self.main_color)
+        self.general_frame = Frame(self.root, bg=self.main_color)
+        self.first_frame = Frame(self.general_frame, bg=self.main_color)
+        self.second_frame = Frame(self.general_frame, bg=self.main_color)
+        self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.room_label = Label(self.first_frame, text="Room name", bg=self.main_color)
-        self.room_entry = Entry(self.first_frame)
-        self.join_button = Button(self.second_frame, text="Join", command=self.join)
-        self.create_button = Button(self.second_frame, text="Create", command=self.create)
+        self.room_entry = Entry(self.first_frame, relief=FLAT)
+        self.join_button = Button(self.second_frame, text="Join", command=self.join, relief=FLAT)
+        self.create_button = Button(self.second_frame, text="Create", command=self.create, relief=FLAT)
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
+        self.general_frame.pack(expand=True)
         self.first_frame.pack(pady=5)
         self.second_frame.pack(pady=10)
         self.third_frame.pack()
@@ -228,7 +232,11 @@ class RoomPage:
             arg.delete(0, END)
 
     def quit(self):
-        self.root.destroy()
+        self.general_frame.destroy()
+        self.first_frame.destroy()
+        self.second_frame.destroy()
+        self.third_frame.destroy()
+        self.root.quit()
 
     def loop(self):
         self.root.mainloop()
@@ -236,13 +244,11 @@ class RoomPage:
 
 
 class MainPage:
-    def __init__(self, username, password, room):
-        self.main_color = "dim gray"
-        self.root = Tk()
-        self.root.title(f"Groupchat v{VERSION} - Main page")
-        self.root.geometry("450x500")
-        self.root.resizable(True, True)
-        self.root.minsize(450, 500)
+    def __init__(self, root, color, username, password, room):
+        self.root = root
+        self.root.geometry("800x600")
+        self.root.minsize(500, 550)
+        self.main_color = color
         self.username = username
         self.password = password
         self.room = room
@@ -254,16 +260,15 @@ class MainPage:
         self.third_frame = Frame(self.root, bg=self.main_color)
         self.home_label = Label(self.first_frame, text=self.room, bg=self.main_color)
         self.user_label = Label(self.first_frame, text=self.username, bg=self.main_color)
-        self.post_text = Text(self.second_frame, font="ubuntu 10", height=5, relief=SUNKEN)
-        self.post_button = Button(self.second_frame, text="Post", command=self.post)
-        self.no_text_label = Label(self.second_frame, bg=self.main_color)
-        self.messages_text = Text(self.third_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3")
-
+        self.messages_text = Text(self.second_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3", relief=FLAT)
         # In particular, config the Checkbutton for "reading news mode"
         self.reading_loop_variable = IntVar()
-        self.reading_loop_checkbutton = Checkbutton(self.third_frame, text="Reading news mode", bg=self.main_color, variable=self.reading_loop_variable, command=self.read)
+        self.reading_loop_checkbutton = Checkbutton(self.second_frame, text="Reading news mode", bg=self.main_color,
+                                                    variable=self.reading_loop_variable, command=self.read)
+        self.post_text = Text(self.third_frame, font="ubuntu 10", width=40, height=2, relief=FLAT)
+        self.post_button = Button(self.third_frame, text="Post", width=4, command=self.post, relief=FLAT)
 
-        # In particular, set the tags that will generete different foreground colors for
+        # In particular, set the tags that will generate different foreground colors for
         # the user and the message into the message_text widget
         self.messages_text.tag_add("user", "1.0", END)
         self.messages_text.tag_add("message", "1.0", END)
@@ -272,15 +277,14 @@ class MainPage:
 
         # Draw the main widgets
         self.first_frame.pack(fill=X)
-        self.second_frame.pack(fill=X)
-        self.third_frame.pack(fill=BOTH, expand=True)
+        self.second_frame.pack(fill=BOTH, expand=True)
+        self.third_frame.pack(fill=X)
         self.home_label.pack(side="left", padx=10, pady=5)
         self.user_label.pack(side="right", padx=10, pady=5)
-        self.post_text.pack(fill=X, padx=10, pady=10)
-        self.post_button.pack(side="right", padx=10, pady=7)
-        self.no_text_label.pack(side="left", padx=10, pady=7)
         self.messages_text.pack(fill=BOTH, expand=True, padx=10, pady=5)
         self.reading_loop_checkbutton.pack(side="left", padx=10, pady=5)
+        self.post_text.pack(fill=BOTH, expand=True, side="left", padx=10, pady=10)
+        self.post_button.pack(fill=Y, side="right", padx=10, pady=10)
 
     def post(self):
         # Just take the text written in the Text widget
@@ -288,17 +292,15 @@ class MainPage:
         # Replace every "\n" with nothing --> yes, you can't go to a new line
         text = text.replace('\n', '')
 
-        # If it is empty label it
+        self.reset_text(self.post_text)
+        # If it is empty write it
         if not text:
-            self.no_text_label["text"] = "Insert a valid text"
-        # Else if the length of the message is bigger than the buffer, label it
+            self.post_text.insert(1.0, "Insert a valid text")
+        # Else if the length of the message is bigger than the buffer, write it
         elif len(text) > BUFFER:
-            self.no_text_label["text"] = f"You can't send more than {BUFFER} character"
+            self.post_text.insert(1.0, f"You can't send more than {BUFFER} characters")
         # Else if the message is good
         else:
-            self.no_text_label["text"] = ""
-            self.reset_text(self.post_text)
-
             # Send to server the text, the username of that text and the actual room
             send_to_server("post_text_database", text, self.username, self.room)
 
@@ -344,15 +346,21 @@ class MainPage:
 
 
 def main():
-    log_p = LoginPage()
+    main_color = "dim gray"
+    general_root = Tk()
+    general_root.title("GroupChat 1.2.3")
+    general_root.configure(bg=main_color)
+    general_root.resizable(True, True)
+
+    log_p = LoginPage(general_root, main_color)
     log_p.config()
     username, password = log_p.loop()
 
-    room_p = RoomPage()
+    room_p = RoomPage(general_root, main_color)
     room_p.config()
     room = room_p.loop()
 
-    main_p = MainPage(username, password, room)
+    main_p = MainPage(general_root, main_color, username, password, room)
     main_p.config()
     main_p.loop()
 

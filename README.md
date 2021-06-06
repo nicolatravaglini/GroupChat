@@ -11,8 +11,6 @@ Sometimes the messages are formed only by the sender, and not you they unlock ev
 IDEAS:
 Implement a list of rooms you can enter, with relative password;
 
-Reverse the order of the writing part of the message with that of reading;
-
 Insert the buttons to be able to go back (in the screens previous);
 
 Implement file encryption algorithm;
@@ -22,5 +20,3 @@ Insert the application icon on each screen;
 For the server side, implement the graphical interface, which allows to enter the door code to gain access and the address Public IP to access; obviously do the same thing for the side as well client;
 
 Implement a startup screen with logo animation;
-
-Merge all screens into one window, which changes what's there every time inside;
