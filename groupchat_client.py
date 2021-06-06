@@ -34,6 +34,8 @@ def send_to_server(choice, text, username, password):
 class LoginPage:
     def __init__(self, root, color):
         self.root = root
+        self.root.geometry("300x250")
+        self.root.minsize(300, 250)
         self.main_color = color
 
     def config(self):
@@ -147,6 +149,8 @@ class LoginPage:
 class RoomPage:
     def __init__(self, root, color):
         self.root = root
+        self.root.geometry("300x250")
+        self.root.minsize(300, 250)
         self.main_color = color
 
     def config(self):
@@ -242,6 +246,8 @@ class RoomPage:
 class MainPage:
     def __init__(self, root, color, username, password, room):
         self.root = root
+        self.root.geometry("800x600")
+        self.root.minsize(500, 550)
         self.main_color = color
         self.username = username
         self.password = password
@@ -346,9 +352,7 @@ class MainPage:
 def main():
     main_color = "dim gray"
     general_root = Tk()
-    general_root.title("GroupChat")
-    general_root.geometry("450x500")
-    general_root.minsize(450, 500)
+    general_root.title("GroupChat 1.2.3")
     general_root.configure(bg=main_color)
     general_root.resizable(True, True)
 
