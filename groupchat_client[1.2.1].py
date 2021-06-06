@@ -6,7 +6,7 @@ import socket
 VERSION = "1.2.1"
 
 # Client global variables
-HOST = "151.41.208.203"
+HOST = "127.0.1.1"
 PORT = 5555
 BUFFER = 1024
 FORMAT = "utf-8"
@@ -285,8 +285,11 @@ class MainPage:
     def post(self):
         # Just take the text written in the Text widget
         text = self.post_text.get("1.0", END)
+        # Replace every "\n" with nothing --> yes, you can't go to a new line
+        text = text.replace('\n', '')
+
         # If it is empty label it
-        if text == '\n':
+        if not text:
             self.no_text_label["text"] = "Insert a valid text"
         # Else if the length of the message is bigger than the buffer, label it
         elif len(text) > BUFFER:
@@ -297,7 +300,7 @@ class MainPage:
             self.reset_text(self.post_text)
 
             # Send to server the text, the username of that text and the actual room
-            send_to_server("post_text_database", text.replace('\n', ''), self.username, self.room)
+            send_to_server("post_text_database", text, self.username, self.room)
 
     def read(self):
         # Ask to the server the sorted by date list of the messages

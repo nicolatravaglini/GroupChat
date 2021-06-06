@@ -1,1 +1,0 @@
-E ho capito che la nuova versione del software, essendo di grande cambiamento e non retrocompatibile, sarà 2.3.2
