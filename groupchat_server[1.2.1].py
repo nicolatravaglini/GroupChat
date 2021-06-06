@@ -67,26 +67,25 @@ def handle_client(client_socket, address):
                     client_socket.sendall(str(["no_rooms"]).encode(FORMAT))
 
             elif choice == "write_room_database":
-                os.mkdir(f"text_db\\{text}")
+                os.mkdir(f"text_db/{text}")
 
             # The client wants to post a new text
             elif choice == "post_text_database":
                 # Find the new filename (username + _ + num)
                 num = 0
-                while os.path.exists(f"text_db\\{password}\\{username}_{num}.txt"):
+                while os.path.exists(f"text_db/{password}/{username}_{num}.txt"):
                     num += 1
                 # Write the text into it
-                file_name = f"text_db\\{password}\\{username}_{str(num)}.txt"
-                with open(file_name, "w") as database:
+                file_name = f"text_db/{password}/{username}_{str(num)}.txt"
+                with open(file_name, "w", encoding="utf8") as database:
                     database.write(text)
 
             # The client wants to read the sorted list of file messages
             elif choice == "read_sorted_text_database":
                 # Just get the sorted by date list of file messages
-                os.chdir(f"text_db\\{text}")
+                os.chdir(f"text_db/{text}")
                 text_files = sorted(os.listdir(), key=os.path.getctime)
-                os.chdir("..")
-                os.chdir("..")
+                os.chdir("../..")
                 # If there's almost one file
                 if len(text_files) > 0:
                     client_socket.sendall(str(text_files).encode(FORMAT))
@@ -96,7 +95,7 @@ def handle_client(client_socket, address):
 
             # The client wants to read the content of a file message
             elif choice == "read_text_database":
-                with open(f"text_db\\{username}\\{text}", "r") as txt:
+                with open(f"text_db/{username}/{text}", "r") as txt:
                     string = "".join(elem for elem in txt.readlines())
                 client_socket.sendall(str(string).encode(FORMAT))
     except:

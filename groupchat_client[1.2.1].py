@@ -6,7 +6,7 @@ import socket
 VERSION = "1.2.1"
 
 # Client global variables
-HOST = "151.41.208.203"
+HOST = "127.0.1.1"
 PORT = 5555
 BUFFER = 1024
 FORMAT = "utf-8"
