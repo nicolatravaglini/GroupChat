@@ -46,10 +46,10 @@ class LoginPage:
         self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.username_label = Label(self.first_frame, text="Username", bg=self.main_color)
         self.password_label = Label(self.first_frame, text="Password", bg=self.main_color)
-        self.username_entry = Entry(self.first_frame)
-        self.password_entry = Entry(self.first_frame, show='*')
-        self.login_button = Button(self.second_frame, text="Login", command=self.login)
-        self.register_button = Button(self.second_frame, text="Register", command=self.register)
+        self.username_entry = Entry(self.first_frame, relief=FLAT)
+        self.password_entry = Entry(self.first_frame, show='*', relief=FLAT)
+        self.login_button = Button(self.second_frame, text="Login", command=self.login, relief=FLAT)
+        self.register_button = Button(self.second_frame, text="Register", command=self.register, relief=FLAT)
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
         # Draw the login widgets
@@ -159,9 +159,9 @@ class RoomPage:
         self.second_frame = Frame(self.general_frame, bg=self.main_color)
         self.third_frame = Frame(self.general_frame, bg=self.main_color)
         self.room_label = Label(self.first_frame, text="Room name", bg=self.main_color)
-        self.room_entry = Entry(self.first_frame)
-        self.join_button = Button(self.second_frame, text="Join", command=self.join)
-        self.create_button = Button(self.second_frame, text="Create", command=self.create)
+        self.room_entry = Entry(self.first_frame, relief=FLAT)
+        self.join_button = Button(self.second_frame, text="Join", command=self.join, relief=FLAT)
+        self.create_button = Button(self.second_frame, text="Create", command=self.create, relief=FLAT)
         self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
 
         self.general_frame.pack(expand=True)
@@ -260,16 +260,15 @@ class MainPage:
         self.third_frame = Frame(self.root, bg=self.main_color)
         self.home_label = Label(self.first_frame, text=self.room, bg=self.main_color)
         self.user_label = Label(self.first_frame, text=self.username, bg=self.main_color)
-        self.post_text = Text(self.second_frame, font="ubuntu 10", height=5, relief=SUNKEN)
-        self.post_button = Button(self.second_frame, text="Post", command=self.post)
-        self.no_text_label = Label(self.second_frame, bg=self.main_color)
-        self.messages_text = Text(self.third_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3")
-
+        self.messages_text = Text(self.second_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3", relief=FLAT)
         # In particular, config the Checkbutton for "reading news mode"
         self.reading_loop_variable = IntVar()
-        self.reading_loop_checkbutton = Checkbutton(self.third_frame, text="Reading news mode", bg=self.main_color, variable=self.reading_loop_variable, command=self.read)
+        self.reading_loop_checkbutton = Checkbutton(self.second_frame, text="Reading news mode", bg=self.main_color,
+                                                    variable=self.reading_loop_variable, command=self.read)
+        self.post_text = Text(self.third_frame, font="ubuntu 10", width=40, height=2, relief=FLAT)
+        self.post_button = Button(self.third_frame, text="Post", width=4, command=self.post, relief=FLAT)
 
-        # In particular, set the tags that will generete different foreground colors for
+        # In particular, set the tags that will generate different foreground colors for
         # the user and the message into the message_text widget
         self.messages_text.tag_add("user", "1.0", END)
         self.messages_text.tag_add("message", "1.0", END)
@@ -278,15 +277,14 @@ class MainPage:
 
         # Draw the main widgets
         self.first_frame.pack(fill=X)
-        self.second_frame.pack(fill=X)
-        self.third_frame.pack(fill=BOTH, expand=True)
+        self.second_frame.pack(fill=BOTH, expand=True)
+        self.third_frame.pack(fill=X)
         self.home_label.pack(side="left", padx=10, pady=5)
         self.user_label.pack(side="right", padx=10, pady=5)
-        self.post_text.pack(fill=X, padx=10, pady=10)
-        self.post_button.pack(side="right", padx=10, pady=7)
-        self.no_text_label.pack(side="left", padx=10, pady=7)
         self.messages_text.pack(fill=BOTH, expand=True, padx=10, pady=5)
         self.reading_loop_checkbutton.pack(side="left", padx=10, pady=5)
+        self.post_text.pack(fill=BOTH, expand=True, side="left", padx=10, pady=10)
+        self.post_button.pack(fill=Y, side="right", padx=10, pady=10)
 
     def post(self):
         # Just take the text written in the Text widget
@@ -294,17 +292,15 @@ class MainPage:
         # Replace every "\n" with nothing --> yes, you can't go to a new line
         text = text.replace('\n', '')
 
-        # If it is empty label it
+        self.reset_text(self.post_text)
+        # If it is empty write it
         if not text:
-            self.no_text_label["text"] = "Insert a valid text"
-        # Else if the length of the message is bigger than the buffer, label it
+            self.post_text.insert(1.0, "Insert a valid text")
+        # Else if the length of the message is bigger than the buffer, write it
         elif len(text) > BUFFER:
-            self.no_text_label["text"] = f"You can't send more than {BUFFER} character"
+            self.post_text.insert(1.0, f"You can't send more than {BUFFER} characters")
         # Else if the message is good
         else:
-            self.no_text_label["text"] = ""
-            self.reset_text(self.post_text)
-
             # Send to server the text, the username of that text and the actual room
             send_to_server("post_text_database", text, self.username, self.room)
 

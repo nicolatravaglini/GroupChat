@@ -11,8 +11,6 @@ Sometimes the messages are formed only by the sender, and not you they unlock ev
 IDEAS:
 Implement a list of rooms you can enter, with relative password;
 
-Reverse the order of the writing part of the message with that of reading;
-
 Insert the buttons to be able to go back (in the screens previous);
 
 Implement file encryption algorithm;
