@@ -8,8 +8,6 @@ Down here you can find the BUGS to resolve and the IDEAS to improve to the code.
 BUGS:
 Sometimes the messages are formed only by the sender, and not you they unlock even by activating the Reading News mode;
 
-Some characters are not accepted, and once sent they create an empty text file that blocks the sender's application and the recipient of the message;
-
 If you write as a "\n" character (by pressing ENTER) it is allowed send messages, and this causes the application to crash;
 
 IDEAS:
