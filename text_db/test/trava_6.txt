@@ -1,0 +1,1 @@
+l'ottimale ora sarebbe diminuire la larghezza e la lunghezza di questo Entry e mettere il bottone Post a destra di esso, lasciando l'errore di testo non valido sotto
