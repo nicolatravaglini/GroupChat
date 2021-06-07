@@ -213,55 +213,34 @@ class RoomPage:
         self.main_color = color
 
     def config(self):
+        # Config the room page widgets
         self.general_frame = Frame(self.root, bg=self.main_color)
         self.first_frame = Frame(self.general_frame, bg=self.main_color)
         self.second_frame = Frame(self.general_frame, bg=self.main_color)
-        self.third_frame = Frame(self.general_frame, bg=self.main_color)
-        self.room_label = Label(self.first_frame, text="Room name", bg=self.main_color)
-        self.room_entry = Entry(self.first_frame, relief=FLAT)
-        self.join_button = Button(self.second_frame, text="Join", command=self.join, relief=FLAT)
-        self.create_button = Button(self.second_frame, text="Create", command=self.create, relief=FLAT)
-        self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
+        self.add_room_entry = Entry(self.second_frame, relief=FLAT)
+        self.add_room_button = Button(self.second_frame, text="+", command=self.create, height=1, relief=FLAT)
 
-        self.general_frame.pack(expand=True)
-        self.first_frame.pack(pady=5)
-        self.second_frame.pack(pady=10)
-        self.third_frame.pack()
-        self.room_label.pack()
-        self.room_entry.pack()
-        self.join_button.pack(side="left", padx=7)
-        self.create_button.pack(side="right", padx=7)
-        self.wrong_text_label.pack()
+        # Get from the server the list of rooms of the server, and pack a button from each one
+        rooms = eval(receive_from_server("read_room_database", None, None, None))
+        if rooms[0] != "no_rooms":
+            for room in rooms:
+                Button(self.first_frame, text=room, command=lambda: self.join(room), relief=FLAT).pack(fill=X, side=TOP, padx=5, pady=5)
 
-    def join(self):
-        self.room = self.room_entry.get()
+        self.general_frame.pack(fill=BOTH, expand=True)
+        self.first_frame.pack(fill=BOTH, expand=True, side=TOP)
+        self.second_frame.pack(fill=X, side=BOTTOM, pady=10)
 
-        if self.room:
-            rooms = eval(receive_from_server("read_room_database", None, None, None))
+        self.add_room_entry.pack(fill=BOTH, expand=True, side="left", padx=5)
+        self.add_room_button.pack(fill=Y, side="right", padx=5)
 
-            # Check if the room exists
-            room_existence = False
-            # If there's almost one room ("no_rooms" is a flag variable)
-            if rooms[0] != "no_rooms":
-                for room in rooms:
-                    if room == self.room:
-                        room_existence = True
-                        break
-
-            if not room_existence:
-                self.reset_entry(self.room_entry)
-                self.wrong_text_label["text"] = "Join failed"
-            else:
-                self.wrong_text_label["text"] = "Joining room"
-                self.quit()
-
-        else:
-            self.reset_entry(self.room_entry)
-            self.wrong_text_label["text"] = "Insert valid credentials"
+    def join(self, room):
+        self.room = room
+        self.quit()
 
     def create(self):
-        self.room = self.room_entry.get()
+        self.room = self.add_room_entry.get()
 
+        self.reset_entry(self.add_room_entry)
         if self.room and ' ' not in self.room and self.room != '*' and len(self.room) <= 20:
             rooms = eval(receive_from_server("read_room_database", None, None, None))
 
@@ -275,16 +254,15 @@ class RoomPage:
                         break
 
             if room_existence:
-                self.reset_entry(self.room_entry)
-                self.wrong_text_label["text"] = "Room already created"
+                self.add_room_entry.insert("0", "Room already created")
             else:
                 send_to_server("write_room_database", self.room, None, None)
-                self.wrong_text_label["text"] = "Creating room"
+                self.add_room_entry.insert("0", "Creating room")
                 self.quit()
 
         else:
-            self.reset_entry(self.room_entry)
-            self.wrong_text_label["text"] = "Insert valid credentials"
+            self.reset_entry(self.add_room_entry)
+            self.add_room_entry.insert("0", "Insert valid credentials")
 
     def reset_entry(self, *args):
         for arg in args:
@@ -294,7 +272,6 @@ class RoomPage:
         self.general_frame.destroy()
         self.first_frame.destroy()
         self.second_frame.destroy()
-        self.third_frame.destroy()
         self.root.quit()
 
     def loop(self):
