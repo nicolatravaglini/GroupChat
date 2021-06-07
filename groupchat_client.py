@@ -6,13 +6,9 @@ import socket
 VERSION = "1.3.3"
 
 # Client global variables
-HOST = "127.0.1.1"
-PORT = 5555
 BUFFER = 1024
 FORMAT = "utf-8"
-
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.connect((HOST, PORT))
 
 
 def receive_from_server(choice, text, username, password):
@@ -29,6 +25,69 @@ def send_to_server(choice, text, username, password):
     string = str([choice, str(text), str(username), str(password)])
     # Send it
     server_socket.sendall(string.encode(FORMAT))
+
+
+class ServerPage:
+    def __init__(self, root, color):
+        self.root = root
+        self.root.geometry("300x250")
+        self.root.minsize(300, 250)
+        self.main_color = color
+
+    def config(self):
+        # Config the server widgets
+        self.general_frame = Frame(self.root, bg=self.main_color)
+        self.first_frame = Frame(self.general_frame, bg=self.main_color)
+        self.second_frame = Frame(self.general_frame, bg=self.main_color)
+        self.third_frame = Frame(self.general_frame, bg=self.main_color)
+        self.ip_label = Label(self.first_frame, text="Server IP", bg=self.main_color)
+        self.port_label = Label(self.first_frame, text="Server Port", bg=self.main_color)
+        self.ip_entry = Entry(self.first_frame, relief=FLAT)
+        self.port_entry = Entry(self.first_frame, relief=FLAT)
+        self.connect_button = Button(self.second_frame, text="Connect", command=self.connect, relief=FLAT)
+        self.wrong_text_label = Label(self.third_frame, text="", bg=self.main_color)
+
+        # Draw the server widgets
+        self.general_frame.pack(expand=True)
+        self.first_frame.pack(pady=5)
+        self.second_frame.pack(pady=10)
+        self.third_frame.pack()
+        self.ip_label.pack()
+        self.ip_entry.pack()
+        self.port_label.pack()
+        self.port_entry.pack()
+        self.connect_button.pack()
+        self.wrong_text_label.pack()
+
+    def connect(self):
+        self.host = self.ip_entry.get()
+        self.port = int(self.port_entry.get())
+
+        if self.host and self.port:
+            # Try to connect to the server
+            try:
+                server_socket.connect((self.host, self.port))
+                self.quit()
+            except Exception:
+                self.reset_entry(self.ip_entry, self.port_entry)
+                self.wrong_text_label["text"] = "Can't connect to the server"
+        else:
+            self.reset_entry(self.ip_entry, self.port_entry)
+            self.wrong_text_label["text"] = "Insert valid credentials"
+
+    def reset_entry(self, *args):
+        for arg in args:
+            arg.delete(0, END)
+
+    def quit(self):
+        self.general_frame.destroy()
+        self.first_frame.destroy()
+        self.second_frame.destroy()
+        self.third_frame.destroy()
+        self.root.quit()
+
+    def loop(self):
+        self.root.mainloop()
 
 
 class LoginPage:
@@ -351,6 +410,10 @@ def main():
     general_root.title(f"GroupChat {VERSION}")
     general_root.configure(bg=main_color)
     general_root.resizable(True, True)
+
+    server_p = ServerPage(general_root, main_color)
+    server_p.config()
+    server_p.loop()
 
     log_p = LoginPage(general_root, main_color)
     log_p.config()
