@@ -3,7 +3,7 @@ from threading import Thread
 import socket
 
 # App version
-VERSION = "1.2.3"
+VERSION = "1.3.3"
 
 # Client global variables
 HOST = "127.0.1.1"
@@ -348,7 +348,7 @@ class MainPage:
 def main():
     main_color = "dim gray"
     general_root = Tk()
-    general_root.title("GroupChat 1.2.3")
+    general_root.title(f"GroupChat {VERSION}")
     general_root.configure(bg=main_color)
     general_root.resizable(True, True)
 
