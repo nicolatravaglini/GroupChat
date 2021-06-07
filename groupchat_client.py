@@ -3,7 +3,7 @@ from threading import Thread
 import socket
 
 # App version
-VERSION = "1.3.3"
+VERSION = "1.4.3"
 
 # Client global variables
 BUFFER = 1024
@@ -405,24 +405,29 @@ class MainPage:
 
 
 def main():
+    # Create the main general window
     main_color = "dim gray"
     general_root = Tk()
     general_root.title(f"GroupChat {VERSION}")
     general_root.configure(bg=main_color)
     general_root.resizable(True, True)
 
+    # Generate the Server Page window
     server_p = ServerPage(general_root, main_color)
     server_p.config()
     server_p.loop()
 
+    # Generate the Login Page window
     log_p = LoginPage(general_root, main_color)
     log_p.config()
     username, password = log_p.loop()
 
+    # Generate the Room Page window
     room_p = RoomPage(general_root, main_color)
     room_p.config()
     room = room_p.loop()
 
+    # Generate the Main Page window
     main_p = MainPage(general_root, main_color, username, password, room)
     main_p.config()
     main_p.loop()

@@ -1,9 +1,10 @@
 import socket
 from threading import Thread
+from requests import get
 import os
 
 # Server global variables
-HOST = socket.gethostbyname(socket.gethostname())
+HOST = ""
 PORT = 5555
 BUFFER = 1024
 FORMAT = "utf-8"
@@ -12,7 +13,7 @@ FORMAT = "utf-8"
 def config():
     global server
     print("Server GroupChat: ON")
-    print("HOST:", HOST)
+    print("HOST:", get('https://api.ipify.org').text)
     print("PORT:", PORT)
     print("Initializing the server...", end="")
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
