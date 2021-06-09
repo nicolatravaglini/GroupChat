@@ -205,68 +205,91 @@ class LoginPage:
 		return self.username, self.password
 
 
-class RoomPage:
-	def __init__(self, root, color):
+class MainPage:
+	def __init__(self, root, color, username, password):
 		self.root = root
-		self.root.geometry("350x300")
-		self.root.minsize(350, 300)
+		self.root.geometry("900x600")
+		self.root.minsize(900, 600)
 		self.main_color = color
+		self.username = username
+		self.password = password
+		self.room = ""
 
 	def config(self):
-		# Config the room page widgets
-		self.general_frame = Frame(self.root, bg=self.main_color)
-		self.first_frame = Frame(self.general_frame, bg=self.main_color)
-		self.second_frame = Frame(self.general_frame, bg=self.main_color)
-		self.room_listbox = Listbox(self.first_frame, bg=self.main_color, selectmode="single", font="consolas 10", relief=FLAT)
-		self.room_entry = Entry(self.second_frame, relief=FLAT)
-		self.add_room_button = Button(self.second_frame, text="+", command=self.create, height=1, relief=FLAT)
-		self.enter_room_button = Button(self.second_frame, text="Join", command=self.join, height=1, relief=FLAT)
+		# Config the main frames
+		self.general_frame = Frame(self.root, bg=self.main_color, relief=FLAT)
+		self.left_frame = Frame(self.general_frame, bg=self.main_color, relief=FLAT)
+		self.right_frame = Frame(self.general_frame, bg=self.main_color, relief=FLAT)
 
+		# Configure the right frame
+		self.first_right_frame = Frame(self.right_frame, bg=self.main_color, relief=FLAT)
+		self.second_right_frame = Frame(self.right_frame, bg=self.main_color, relief=FLAT)
+		self.third_right_frame = Frame(self.right_frame, bg=self.main_color, relief=FLAT)
+		self.home_label = Label(self.first_right_frame, text=self.room, bg=self.main_color)
+		self.user_label = Label(self.first_right_frame, text=self.username, bg=self.main_color)
+		self.messages_text = Text(self.second_right_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3", relief=FLAT)
+		# In particular, config the Checkbutton for "reading news mode"
+		self.reading_loop_variable = IntVar()
+		self.reading_loop_checkbutton = Checkbutton(self.second_right_frame, text="Reading mode", bg=self.main_color, selectcolor="yellow", activebackground=self.main_color, activeforeground="black", fg="black", variable=self.reading_loop_variable, command=self.read, relief=FLAT)
+		self.reading_loop_checkbutton.select()
+		self.post_text = Text(self.third_right_frame, font="ubuntu 10", width=40, height=2, relief=FLAT)
+		self.post_button = Button(self.third_right_frame, text="Post", width=4, command=self.post, relief=FLAT)
+		# In particular, set the tags that will generate different foreground colors for
+		# the user and the message into the message_text widget
+		self.messages_text.tag_add("user", "1.0", END)
+		self.messages_text.tag_add("message", "1.0", END)
+		self.messages_text.tag_config("user", font="consolas 10", foreground="dark orange")
+		self.messages_text.tag_config("message", font="consolas 10")
+
+		# Configure the left frame
+		self.first_left_frame = Frame(self.general_frame, bg=self.main_color)
+		self.second_left_frame = Frame(self.general_frame, bg=self.main_color)
+		self.room_listbox = Listbox(self.first_left_frame, bg=self.main_color, selectmode="single", font="consolas 10", relief=FLAT)
+		self.room_entry = Entry(self.second_left_frame, relief=FLAT)
+		self.add_room_button = Button(self.second_left_frame, text="+", command=self.create, height=1, relief=FLAT)
+		# Insert the rooms into the room listbox
+		self.update_rooms()
+
+		# Draw the main frames
+		self.general_frame.pack(fill=BOTH, expand=True)
+		self.left_frame.pack(fill=BOTH, side="left")
+		self.right_frame.pack(fill=BOTH, expand=True, side="right")
+
+		# Draw the right frame widgets
+		self.first_right_frame.pack(fill=X)
+		self.second_right_frame.pack(fill=BOTH, expand=True)
+		self.third_right_frame.pack(fill=X)
+		self.home_label.pack(side="left", padx=5, pady=10)
+		self.user_label.pack(side="right", padx=5, pady=10)
+		self.messages_text.pack(fill=BOTH, expand=True, padx=5, pady=10)
+		self.reading_loop_checkbutton.pack(side="left", padx=5, pady=10)
+		self.post_text.pack(fill=BOTH, expand=True, side="left", padx=5, pady=10)
+		self.post_button.pack(fill=Y, side="right", padx=5, pady=10)
+
+		# Draw the left frame widgets
+		self.first_left_frame.pack(fill=BOTH, expand=True, side=TOP)
+		self.second_left_frame.pack(fill=BOTH, side=BOTTOM)
+		self.room_listbox.pack(fill=BOTH, expand=True, padx=5, pady=10)
+		self.room_entry.pack(fill=BOTH, expand=True, side="left", padx=5, pady=10)
+		self.add_room_button.pack(fill=Y, side="left", padx=5, pady=10)
+		# Bind the selection of an item of the list box as the copy of its content in the entry room
+		self.room_listbox.bind("<<ListboxSelect>>", self.listbox_selection)
+
+		# Visualize the first room chat
+		self.room = self.room_listbox.get(0)
+		self.read()
+
+	def listbox_selection(self, selection):
+		self.room = self.room_listbox.get(ANCHOR)
+		self.read()
+
+	def update_rooms(self):
+		self.room_listbox.delete(0, END)
 		# Get from the server the list of rooms of the server, and insert each room on the room list box
 		rooms = eval(receive_from_server("read_room_database", None, None, None))
 		if rooms[0] != "no_rooms":
 			for i in range(len(rooms)):
 				self.room_listbox.insert(i, rooms[i])
-
-		self.general_frame.pack(fill=BOTH, expand=True)
-		self.first_frame.pack(fill=BOTH, expand=True, side=TOP)
-		self.second_frame.pack(fill=BOTH, side=BOTTOM)
-		self.room_listbox.pack(fill=BOTH, expand=True, padx=5, pady=10)
-		self.room_entry.pack(fill=BOTH, expand=True, side="left", padx=5, pady=10)
-		self.add_room_button.pack(fill=Y, side="left", padx=5, pady=10)
-		self.enter_room_button.pack(fill=Y, side="right", padx=5, pady=10)
-
-		# Bind the selection of an item of the list box as the copy of its content in the entry room
-		self.room_listbox.bind("<<ListboxSelect>>", self.listbox_selection)
-
-	def listbox_selection(self, selection):
-		self.reset_entry(self.room_entry)
-		self.room_entry.insert("0", self.room_listbox.get(ANCHOR))
-
-	def join(self):
-		self.room = self.room_entry.get()
-
-		if self.room:
-			self.reset_entry(self.room_entry)
-			rooms = eval(receive_from_server("read_room_database", None, None, None))
-
-			# Check if the room exists
-			room_existence = False
-			# If there's almost one room ("no_rooms" is a flag variable)
-			if rooms[0] != "no_rooms":
-				for room in rooms:
-					if room == self.room:
-						room_existence = True
-						break
-
-			if room_existence:
-				self.room_entry.insert("0", "Joining room")
-				self.quit()
-			else:
-				self.room_entry.insert("0", "Room doesn't exist")
-		else:
-			self.reset_entry(self.room_entry)
-			self.room_entry.insert("0", "Insert valid credentials")
 
 	def create(self):
 		self.room = self.room_entry.get()
@@ -288,69 +311,11 @@ class RoomPage:
 				self.room_entry.insert("0", "Room already created")
 			else:
 				send_to_server("write_room_database", self.room, None, None)
-				self.room_entry.insert("0", "Creating room")
-				self.quit()
+				self.update_rooms()
+				self.read()
 
 		else:
 			self.room_entry.insert("0", "Insert valid credentials")
-
-	def reset_entry(self, *args):
-		for arg in args:
-			arg.delete(0, END)
-
-	def quit(self):
-		self.general_frame.destroy()
-		self.first_frame.destroy()
-		self.second_frame.destroy()
-		self.root.quit()
-
-	def loop(self):
-		self.root.mainloop()
-		return self.room
-
-
-class MainPage:
-	def __init__(self, root, color, username, password, room):
-		self.root = root
-		self.root.geometry("800x600")
-		self.root.minsize(500, 550)
-		self.main_color = color
-		self.username = username
-		self.password = password
-		self.room = room
-
-	def config(self):
-		# Config the main window widgets
-		self.first_frame = Frame(self.root, bg=self.main_color)
-		self.second_frame = Frame(self.root, bg=self.main_color)
-		self.third_frame = Frame(self.root, bg=self.main_color)
-		self.home_label = Label(self.first_frame, text=self.room, bg=self.main_color)
-		self.user_label = Label(self.first_frame, text=self.username, bg=self.main_color)
-		self.messages_text = Text(self.second_frame, font="consolas 10", height=18, bg="RoyalBlue4", fg="snow3", relief=FLAT)
-		# In particular, config the Checkbutton for "reading news mode"
-		self.reading_loop_variable = IntVar()
-		self.reading_loop_checkbutton = Checkbutton(self.second_frame, text="Reading news mode", bg=self.main_color,
-													variable=self.reading_loop_variable, command=self.read)
-		self.post_text = Text(self.third_frame, font="ubuntu 10", width=40, height=2, relief=FLAT)
-		self.post_button = Button(self.third_frame, text="Post", width=4, command=self.post, relief=FLAT)
-
-		# In particular, set the tags that will generate different foreground colors for
-		# the user and the message into the message_text widget
-		self.messages_text.tag_add("user", "1.0", END)
-		self.messages_text.tag_add("message", "1.0", END)
-		self.messages_text.tag_config("user", font="consolas 10", foreground="dark orange")
-		self.messages_text.tag_config("message", font="consolas 10")
-
-		# Draw the main widgets
-		self.first_frame.pack(fill=X)
-		self.second_frame.pack(fill=BOTH, expand=True)
-		self.third_frame.pack(fill=X)
-		self.home_label.pack(side="left", padx=5, pady=10)
-		self.user_label.pack(side="right", padx=5, pady=10)
-		self.messages_text.pack(fill=BOTH, expand=True, padx=5, pady=10)
-		self.reading_loop_checkbutton.pack(side="left", padx=5, pady=10)
-		self.post_text.pack(fill=BOTH, expand=True, side="left", padx=5, pady=10)
-		self.post_button.pack(fill=Y, side="right", padx=5, pady=10)
 
 	def post(self):
 		# Just take the text written in the Text widget
@@ -374,10 +339,12 @@ class MainPage:
 		# Ask to the server the sorted by date list of the messages
 		text_files = eval(receive_from_server("read_sorted_text_database", self.room, None, None))
 
+		self.home_label["text"] = self.room
+		self.messages_text["state"] = "normal"
+		self.reset_text(self.messages_text)
+
 		# If there's almost one account ("no_text" is a flag variable)
 		if text_files[0] != "no_text":
-			self.messages_text["state"] = "normal"
-			self.reset_text(self.messages_text)
 
 			# For all the files in the array insert the content in the message_text widget
 			for file in text_files:
@@ -395,9 +362,13 @@ class MainPage:
 
 		self.messages_text["state"] = "disabled"
 
-		# If the "reading news mode" is on, update every second the Text widget
+		# If the "reading mode" is on, update every second the Text widget
 		if self.reading_loop_variable.get():
 			self.messages_text.after(1000, self.read)
+
+	def reset_entry(self, *args):
+		for arg in args:
+			arg.delete(0, END)
 
 	def reset_text(self, *args):
 		for arg in args:
@@ -430,12 +401,14 @@ def main():
 	username, password = log_p.loop()
 
 	# Generate the Room Page window
+	"""
 	room_p = RoomPage(general_root, main_color)
 	room_p.config()
 	room = room_p.loop()
+	"""
 
 	# Generate the Main Page window
-	main_p = MainPage(general_root, main_color, username, password, room)
+	main_p = MainPage(general_root, main_color, username, password)
 	main_p.config()
 	main_p.loop()
 
